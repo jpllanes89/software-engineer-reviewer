@@ -1,0 +1,41 @@
+Part 1 - Goals
+1.1. Create questions
+1.2. Validate answer
+1.2.1. Through compiling and running the application or automatic validation
+1.3. User views the questions
+1.3.1. Through a generated text file or running application
+1.4.1. User answer the questions
+
+
+Part 2 - Implementation
+2.1. Create questions - Manual
+2.1.1. Datastore to store the questions(CSV file)
+2.1.2. CSV Format
+2.1.2.1. id - required
+2.1.2.2. question - required
+2.1.2.3. answer - optional - (for code snippets/no exact answers)
+2.1.2.4. group - required - (java 8 features, data structure and algorithms, design pattern..)
+2.1.2.5. similarity_id - required
+2.1.2.6. complexity - required
+
+2.2.1. Startup
+2.2.1.2. application asks for complexity
+
+2.3.1. Datastructure on running application
+2.3.1.1. Question pojo(Builder Pattern)
+2.3.1.1.1. id
+2.3.1.1.2. question 
+2.3.1.1.3. answer 
+2.3.1.1.4. group 
+2.3.1.1.5. similarityId 
+2.3.1.1.6. complexity 
+
+2.4.1. Reading the CSV
+2.4.1.1. Read using buffered reader and file reader
+2.4.1.2. Store in a list of Question pojo
+
+
+
+
+
+
