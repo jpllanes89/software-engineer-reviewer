@@ -1,0 +1,3 @@
+id,question,snippet,answer,category,group,similarity_id,complexity
+1,twoSum,    //Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.<cr>    int nums = new int[]{<random-array>};<cr>    int target = <two-sum>;<cr>,,Data Structure and Algorithm,search-algorithm,1,5
+2,collectors List<String> given a field,    //Given a list of POJOs, create a List<String> containing all the <random-pojo-field><cr>,,Java8 Features,collectors,2,3
