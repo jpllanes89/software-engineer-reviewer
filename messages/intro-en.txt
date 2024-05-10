@@ -1,0 +1,7 @@
+Hi, this is an app to help you review Java8 and Data Structures and Algorithms
+Please select a complexity, or a question, or a group of questions you want to answer:
+[A] easy
+[B] medium
+[C] hard
+[D] twoSum
+[E] Java8 Collectors
