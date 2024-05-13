@@ -5,3 +5,4 @@ Please select a complexity, or a question, or a group of questions you want to a
 [C] hard
 [D] twoSum
 [E] Java8 Collectors
+[X] exit
