@@ -18,11 +18,13 @@ public class App {
   private static final String FILENAME = "Question";
   private static final String FILE_TYPE = ".java";
   private static final String MESSAGE_PATH_INTRO = "./messages/intro-en.txt";
+  private static final String QUESTIONS_MAPPING_PATH = "./mappings/questions-mapping.csv";
   private static final String LOCAL_DATE_TIME_FORMAT = "yyyyMMddHHmm";
   private static final Scanner SCANNER = new Scanner(System.in);
 
   public static void main(String[] args) {
 
+    readQuestionMappingFile();
     String option = showIntroAndOptions();
     System.out.println("option: " + option);
 
@@ -83,6 +85,43 @@ public class App {
     return option;
   }
 
+  private static List<QuestionMapping> readQuestionMappingFile() {
+
+    List<QuestionMapping> questionMappings = new ArrayList<>();
+    File file = new File(QUESTIONS_MAPPING_PATH);
+
+    if (!file.exists()) {
+
+      System.err.println("no " + QUESTIONS_MAPPING_PATH + " exists. Application will exit");
+      System.exit(1);
+    }
+
+    try (FileInputStream fis = new FileInputStream(file);
+        BufferedReader br = new BufferedReader(new InputStreamReader(fis))) {
+
+      String line = "";
+      // skip file header
+      br.readLine();
+      while ((line = br.readLine()) != null) {
+
+        System.out.println(line);
+        parseQuestionMappingLine(line);
+      }
+
+    } catch (IOException e) {
+      System.err.println(e.getMessage());
+    }
+
+    return questionMappings;
+  }
+
+  private static QuestionMapping parseQuestionMappingLine(String line) {
+
+    String[] split = line.split(",");
+
+    return null;
+  }
+
   private static void generateQuestionnare() {
 
     String directoryName = generateDirectoryName();
@@ -113,7 +152,7 @@ public class App {
 
       if (file.exists()) {
 
-        try (FileWriter fr = new FileWriter(filename, true);
+        try (FileWriter fr = new FileWriter(filename);
             BufferedWriter bw = new BufferedWriter(fr)) {
           bw.write("banana");
           bw.newLine();
@@ -136,5 +175,108 @@ public class App {
                     .withZone(ZoneOffset.of("-16:00")));
 
     return FILENAME + dateStr + FILE_TYPE;
+  }
+}
+
+class QuestionMapping {
+
+  private Integer id;
+  private String javaFile;
+  private String questionFile;
+  private String type;
+  private String category;
+
+  public QuestionMapping(QuestionMappingBuilder builder) {
+
+    this.id = builder.id;
+    this.javaFile = builder.javaFile;
+    this.questionFile = builder.questionFile;
+    this.type = builder.type;
+    this.category = builder.category;
+  }
+
+  public Integer getId() {
+
+    return this.id;
+  }
+
+  public String getJavaFile() {
+
+    return this.javaFile;
+  }
+
+  public String getQuestionFile() {
+
+    return this.questionFile;
+  }
+
+  public String getType() {
+
+    return this.type;
+  }
+
+  public String getCategory() {
+
+    return this.category;
+  }
+
+  @Override
+  public String toString() {
+
+    return "{\"QuestionMapping\" : {\"id\" : "
+        + id
+        + ", \"javaFile\" : "
+        + javaFile
+        + ", \"type\" : "
+        + type
+        + ", \"questionFile\" : "
+        + questionFile
+        + ", \"category\" : "
+        + category
+        + "}}";
+  }
+
+  public static class QuestionMappingBuilder {
+
+    private Integer id;
+    private String javaFile;
+    private String questionFile;
+    private String type;
+    private String category;
+
+    public QuestionMappingBuilder setId(Integer id) {
+
+      this.id = id;
+      return this;
+    }
+
+    public QuestionMappingBuilder setJavaFile(String javaFile) {
+
+      this.javaFile = javaFile;
+      return this;
+    }
+
+    public QuestionMappingBuilder setQuestionFile(String questionFile) {
+
+      this.questionFile = questionFile;
+      return this;
+    }
+
+    public QuestionMappingBuilder setType(String type) {
+
+      this.type = type;
+      return this;
+    }
+
+    public QuestionMappingBuilder setCategory(String category) {
+
+      this.category = category;
+      return this;
+    }
+
+    public QuestionMapping build() {
+
+      return new QuestionMapping(this);
+    }
   }
 }

@@ -10,58 +10,7 @@ public class CollectorsReviewer {
 
     List<Book> books = generateBooks();
 
-    // [1-1]
-    // Accumulate all book titles into a List<String> titleList
-
-    // [1-2]
-    // Accumulate all book authors into a List<String> authorList
-
-    // [2-1]
-    // Accumulate all book titles into a HashSet<String>  titleSet
-
-    // [2-2]
-    // Accumulate all book authors into a TreeSet<String> authorSet
-
-    // [3-1]
-    // Convert titles into a String titles and concatenate them, separated by comma
-
-    // [3-2]
-    // Convert authors into a String authors and concatenate them, separated by comma
-
-    // [4-1]
-    // Compute the sum of all pages of all the books
-
-    // [4-2]
-    // Compute the average price of all the books
-
-    // [5-1]
-    // Group books by category into a Map<String, List<Book>>
-
-    // [5-2]
-    // Group books by number of review stars into a Map<Integer, List<Book>>
-
-    // [5-3]
-    // Group books by genre into a Map<String, List<Book>>. Note that one book has no genre. For
-    // books without genre, make "No Genre" as the key
-
-    // [6-1]
-    // Group books by category and sum the number of pages for each category into a Map<String,
-    // Integer>
-
-    // [6-2]
-    // Group books by genre and sum the number of pages for each category into a Map<String,
-    // Integer>. Note that one book has no genre. For books without genre, make "No Genre" as the
-    // key
-
-    // [7-1]
-    // Partition by number of pages into Map<Boolean, List<Book>>. True if number of pages is
-    // greater then 300
-
-    // [7-2]
-    // Partition by price into Map<Boolean, List<Book>>. True if price is greater then 10.00
-    Map<Boolean, List<Book>> map =
-        books.stream().collect(Collectors.partitioningBy(b -> b.getPrice() > 10.00));
-    System.out.println(map);
+    // REPLACE_WITH_QUESTIONS
   }
 
   private static List<Book> generateBooks() {

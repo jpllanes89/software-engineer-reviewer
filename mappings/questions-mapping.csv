@@ -1,0 +1,2 @@
+id,java-file,question-file,type,category
+CA,./templates/CollectorsReviewer.java,./templates/collectors-reviewer.properties,java-8-features,Collectors
