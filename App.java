@@ -10,8 +10,11 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class App {
 
@@ -21,37 +24,34 @@ public class App {
   private static final String QUESTIONS_MAPPING_PATH = "./mappings/questions-mapping.csv";
   private static final String LOCAL_DATE_TIME_FORMAT = "yyyyMMddHHmm";
   private static final Scanner SCANNER = new Scanner(System.in);
+  private static final String QUESTION_PLACEHOLDER = "REPLACE_WITH_QUESTIONS";
 
   public static void main(String[] args) {
 
-    readQuestionMappingFile();
-    String option = showIntroAndOptions();
-    System.out.println("option: " + option);
+    clearScreen();
+    List<QuestionMapping> questionMappings = readQuestionMappingFile();
 
-    generateQuestionnare();
+    List<String> availableIds =
+        questionMappings.stream().map(QuestionMapping::getId).collect(Collectors.toList());
+
+    String chosenId = showIntroAndOptions(availableIds);
+
+    generateQuestionnare(chosenId, questionMappings);
   }
 
-  private static String showIntroAndOptions() {
+  private static String showIntroAndOptions(List<String> availableIds) {
 
-    String option = "";
+    String chosenId = "";
+
+    List<String> defaultIds = Arrays.asList(new String[] {"A", "B", "C", "X"});
+
     File introMessageFile = new File(MESSAGE_PATH_INTRO);
-    List<String> availableOptions = new ArrayList<>();
 
     try (FileInputStream is = new FileInputStream(introMessageFile);
         BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
       String line = "";
       while ((line = br.readLine()) != null) {
         System.out.println(line);
-        String[] openBracketSplit = line.split("\\[");
-
-        for (String s : openBracketSplit) {
-          if (openBracketSplit.length > 1) {
-            String[] closeBracketSplit = s.split("\\]");
-            if (closeBracketSplit.length > 1) {
-              availableOptions.add(closeBracketSplit[0]);
-            }
-          }
-        }
       }
 
       boolean optionChosen = false;
@@ -60,14 +60,15 @@ public class App {
       while (!optionChosen) {
         input = SCANNER.nextLine();
 
-        if (availableOptions.stream().anyMatch(input::equalsIgnoreCase)) {
+        if (availableIds.stream().anyMatch(input::equalsIgnoreCase)
+            || defaultIds.stream().anyMatch(input::equalsIgnoreCase)) {
           if ("x".equalsIgnoreCase(input)) {
 
             System.out.println(String.format("You have chosen %s to exit", input));
             System.exit(1);
           }
 
-          option = input.toUpperCase();
+          chosenId = input.toUpperCase();
           optionChosen = true;
           System.out.println(String.format("You have chosen: %s", input));
         } else {
@@ -82,7 +83,7 @@ public class App {
     } catch (IOException e) {
       System.err.println(e.getMessage());
     }
-    return option;
+    return chosenId;
   }
 
   private static List<QuestionMapping> readQuestionMappingFile() {
@@ -92,7 +93,7 @@ public class App {
 
     if (!file.exists()) {
 
-      System.err.println("no " + QUESTIONS_MAPPING_PATH + " exists. Application will exit");
+      System.err.println(QUESTIONS_MAPPING_PATH + " does not exist. Application will exit");
       System.exit(1);
     }
 
@@ -104,8 +105,7 @@ public class App {
       br.readLine();
       while ((line = br.readLine()) != null) {
 
-        System.out.println(line);
-        parseQuestionMappingLine(line);
+        questionMappings.add(parseQuestionMappingLine(line));
       }
 
     } catch (IOException e) {
@@ -119,17 +119,108 @@ public class App {
 
     String[] split = line.split(",");
 
-    return null;
+    QuestionMapping mapping =
+        new QuestionMapping.QuestionMappingBuilder()
+            .setId(split[0])
+            .setJavaFile(split[1])
+            .setQuestionFile(split[2])
+            .setType(split[3])
+            .setCategory(split[4])
+            .build();
+
+    return mapping;
   }
 
-  private static void generateQuestionnare() {
+  private static void generateQuestionnare(
+      String chosenId, List<QuestionMapping> questionMappings) {
+
+    String directoryName = generateDirectory();
+    System.out.println("created directory to contain the quetions: " + directoryName);
+
+    Map<String, QuestionMapping> questionMappingsById =
+        questionMappings.stream().collect(Collectors.toMap(QuestionMapping::getId, qm -> qm));
+
+    QuestionMapping questionMapping = questionMappingsById.get(chosenId);
+
+    if (questionMapping == null) {
+      //  generate random questions
+      return;
+    }
+
+    generateQuestionFile(questionMapping, directoryName);
+  }
+
+  private static void generateQuestionFile(QuestionMapping questionMapping, String directoryName) {
+
+    String javaFilePath = questionMapping.getJavaFile();
+    String questionFilePath = questionMapping.getQuestionFile();
+    validateJavaAndQuestionFiles(javaFilePath, questionFilePath);
+
+    String[] javaFilePathSplit = javaFilePath.split("/");
+    String javaFileName = javaFilePathSplit[2];
+    String questionnaireFilePath = "./" + directoryName + "/" + javaFileName;
+
+    try (FileInputStream javaFis = new FileInputStream(javaFilePath);
+        BufferedReader javaBr = new BufferedReader(new InputStreamReader(javaFis));
+        FileInputStream questionFis = new FileInputStream(questionFilePath);
+        BufferedReader questionBr = new BufferedReader(new InputStreamReader(questionFis));
+        FileWriter fw = new FileWriter(questionnaireFilePath);
+        BufferedWriter bw = new BufferedWriter(fw)) {
+
+      String javaLine = "";
+      String questionLine = "";
+      File questionnaireFile = new File(questionnaireFilePath);
+      questionnaireFile.createNewFile();
+      if (!questionnaireFile.exists()) {
+        return;
+      }
+
+      while ((javaLine = javaBr.readLine()) != null) {
+        if (javaLine.toLowerCase().contains(QUESTION_PLACEHOLDER.toLowerCase())) {
+          // read question file
+        } else {
+          bw.write(javaLine);
+          bw.newLine();
+        }
+      }
+      bw.close();
+    } catch (IOException e) {
+      System.err.println(e.getMessage());
+    }
+  }
+
+  private static void validateJavaAndQuestionFiles(String javaFilePath, String questionFilePath) {
+
+    if (!fileExists(javaFilePath)) {
+
+      System.err.println(javaFilePath + "does not exist. Application will exit");
+      System.exit(1);
+    }
+
+    if (!fileExists(questionFilePath)) {
+
+      System.err.println(questionFilePath + "does not exist. Application will exit");
+      System.exit(1);
+    }
+  }
+
+  private static boolean fileExists(String filePath) {
+
+    File file = new File(filePath);
+    return file.exists();
+  }
+
+  private static String generateDirectory() {
 
     String directoryName = generateDirectoryName();
     File directory = new File(directoryName);
+
     if (!directory.exists()) {
 
       directory.mkdir();
     }
+
+    return directoryName;
   }
 
   private static String generateDirectoryName() {
@@ -176,11 +267,17 @@ public class App {
 
     return FILENAME + dateStr + FILE_TYPE;
   }
+
+  private static void clearScreen() {
+
+    System.out.print("\033[H\033[2J");
+    System.out.flush();
+  }
 }
 
 class QuestionMapping {
 
-  private Integer id;
+  private String id;
   private String javaFile;
   private String questionFile;
   private String type;
@@ -195,7 +292,7 @@ class QuestionMapping {
     this.category = builder.category;
   }
 
-  public Integer getId() {
+  public String getId() {
 
     return this.id;
   }
@@ -238,13 +335,13 @@ class QuestionMapping {
 
   public static class QuestionMappingBuilder {
 
-    private Integer id;
+    private String id;
     private String javaFile;
     private String questionFile;
     private String type;
     private String category;
 
-    public QuestionMappingBuilder setId(Integer id) {
+    public QuestionMappingBuilder setId(String id) {
 
       this.id = id;
       return this;
