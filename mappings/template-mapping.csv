@@ -1,0 +1,3 @@
+id,template,group,question-file
+1,./templates/BooksTemplate.java,1,./templates/books-reviewer.properties
+2,./templates/CollectorsReviewer.java,1,./templates/collectors-reviewer.properties

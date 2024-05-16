@@ -23,6 +23,7 @@ public class App {
   private static final String FILE_TYPE = ".java";
   private static final String MESSAGE_PATH_INTRO = "./messages/intro-en.txt";
   private static final String QUESTIONS_MAPPING_PATH = "./mappings/questions-mapping.csv";
+  private static final String TEMPLATE_MAPPING_PATH = "./mappings/template-mapping.csv";
   private static final String LOCAL_DATE_TIME_FORMAT = "yyyyMMddHHmm";
   private static final Scanner SCANNER = new Scanner(System.in);
   private static final String QUESTION_PLACEHOLDER = "REPLACE_WITH_QUESTIONS";
@@ -32,6 +33,7 @@ public class App {
 
     clearScreen();
     List<QuestionMapping> questionMappings = readQuestionMappingFile();
+    System.out.println(questionMappings);
 
     List<String> availableIds =
         questionMappings.stream().map(QuestionMapping::getId).collect(Collectors.toList());
@@ -99,6 +101,8 @@ public class App {
       System.exit(1);
     }
 
+    List<TemplateMapping> templateMappings = readingTemplateMappingFile();
+
     try (FileInputStream fis = new FileInputStream(file);
         BufferedReader br = new BufferedReader(new InputStreamReader(fis))) {
 
@@ -106,8 +110,7 @@ public class App {
       // skip file header
       br.readLine();
       while ((line = br.readLine()) != null) {
-
-        questionMappings.add(parseQuestionMappingLine(line));
+        questionMappings.add(parseQuestionMappingLine(line, templateMappings));
       }
 
     } catch (IOException e) {
@@ -117,20 +120,72 @@ public class App {
     return questionMappings;
   }
 
-  private static QuestionMapping parseQuestionMappingLine(String line) {
+  private static QuestionMapping parseQuestionMappingLine(
+      String line, List<TemplateMapping> templateMappings) {
 
     String[] split = line.split(",");
+
+    Map<String, List<TemplateMapping>> templateMappingsByGroup =
+        templateMappings.stream().collect(Collectors.groupingBy(TemplateMapping::getGroup));
+
+    List<TemplateMapping> availableTemplateMappings = templateMappingsByGroup.get(split[1]);
+
+    Random random = new Random();
+    int listSize = availableTemplateMappings.size();
+    TemplateMapping selectedTemplateMapping =
+        availableTemplateMappings.get(random.nextInt(listSize));
 
     QuestionMapping mapping =
         new QuestionMapping.QuestionMappingBuilder()
             .setId(split[0])
-            .setJavaFile(split[1])
-            .setQuestionFile(split[2])
-            .setType(split[3])
-            .setCategory(split[4])
+            .setTemplateGroup(split[1])
+            .setType(split[2])
+            .setCategory(split[3])
+            .setTemplate(selectedTemplateMapping.getTemplate())
+            .setQuestionFile(selectedTemplateMapping.getQuestionFile())
             .build();
 
     return mapping;
+  }
+
+  private static List<TemplateMapping> readingTemplateMappingFile() {
+
+    List<TemplateMapping> templateMappings = new ArrayList<>();
+
+    File file = new File(TEMPLATE_MAPPING_PATH);
+    if (!file.exists()) {
+
+      System.err.println(TEMPLATE_MAPPING_PATH + "does not exist. Application will exit");
+      System.exit(1);
+    }
+
+    try (FileInputStream fis = new FileInputStream(file);
+        BufferedReader br = new BufferedReader(new InputStreamReader(fis))) {
+      String line = "";
+      // skip header
+      br.readLine();
+      while ((line = br.readLine()) != null) {
+        TemplateMapping templateMapping = parseTemplateMappingLine(line);
+        templateMappings.add(templateMapping);
+      }
+
+    } catch (IOException e) {
+      System.err.println(e.getMessage());
+    }
+    return templateMappings;
+  }
+
+  private static TemplateMapping parseTemplateMappingLine(String line) {
+
+    String[] split = line.split(",");
+    TemplateMapping templateMapping =
+        new TemplateMapping.TemplateMappingBuilder()
+            .setId(split[0])
+            .setTemplate(split[1])
+            .setGroup(split[2])
+            .setQuestionFile(split[3])
+            .build();
+    return templateMapping;
   }
 
   private static List<ReviewerProperty> readReviewerPropertyFile(BufferedReader br)
@@ -184,7 +239,7 @@ public class App {
 
   private static void generateQuestionFile(QuestionMapping questionMapping, String directoryName) {
 
-    String javaFilePath = questionMapping.getJavaFile();
+    String javaFilePath = questionMapping.getTemplate();
     String questionFilePath = questionMapping.getQuestionFile();
     validateJavaAndQuestionFiles(javaFilePath, questionFilePath);
 
@@ -212,6 +267,7 @@ public class App {
 
           List<ReviewerProperty> reviewerProperties = readReviewerPropertyFile(questionBr);
           List<ReviewerProperty> finalList = generateFinalListOfQuestions(reviewerProperties);
+
           for (ReviewerProperty prop : finalList) {
             bw.write(COMMENT_LINE_PREFIX);
             bw.write(prop.getValue());
@@ -302,18 +358,20 @@ public class App {
 class QuestionMapping {
 
   private String id;
-  private String javaFile;
+  private String templateGroup;
   private String questionFile;
   private String type;
   private String category;
+  private String template;
 
   public QuestionMapping(QuestionMappingBuilder builder) {
 
     this.id = builder.id;
-    this.javaFile = builder.javaFile;
+    this.templateGroup = builder.templateGroup;
     this.questionFile = builder.questionFile;
     this.type = builder.type;
     this.category = builder.category;
+    this.template = builder.template;
   }
 
   public String getId() {
@@ -321,9 +379,9 @@ class QuestionMapping {
     return this.id;
   }
 
-  public String getJavaFile() {
+  public String getTemplateGroup() {
 
-    return this.javaFile;
+    return this.templateGroup;
   }
 
   public String getQuestionFile() {
@@ -341,29 +399,37 @@ class QuestionMapping {
     return this.category;
   }
 
+  public String getTemplate() {
+
+    return this.template;
+  }
+
   @Override
   public String toString() {
 
     return "{\"QuestionMapping\" : {\"id\" : "
         + id
-        + ", \"javaFile\" : "
-        + javaFile
+        + ", \"templateGroup\" : "
+        + templateGroup
         + ", \"type\" : "
         + type
         + ", \"questionFile\" : "
         + questionFile
         + ", \"category\" : "
         + category
+        + ", \"template\" : "
+        + template
         + "}}";
   }
 
   public static class QuestionMappingBuilder {
 
     private String id;
-    private String javaFile;
+    private String templateGroup;
     private String questionFile;
     private String type;
     private String category;
+    private String template;
 
     public QuestionMappingBuilder setId(String id) {
 
@@ -371,9 +437,9 @@ class QuestionMapping {
       return this;
     }
 
-    public QuestionMappingBuilder setJavaFile(String javaFile) {
+    public QuestionMappingBuilder setTemplateGroup(String templateGroup) {
 
-      this.javaFile = javaFile;
+      this.templateGroup = templateGroup;
       return this;
     }
 
@@ -392,6 +458,12 @@ class QuestionMapping {
     public QuestionMappingBuilder setCategory(String category) {
 
       this.category = category;
+      return this;
+    }
+
+    public QuestionMappingBuilder setTemplate(String template) {
+
+      this.template = template;
       return this;
     }
 
@@ -485,6 +557,93 @@ class ReviewerProperty {
     public ReviewerProperty build() {
 
       return new ReviewerProperty(this);
+    }
+  }
+}
+
+class TemplateMapping {
+
+  private String id;
+  private String template;
+  private String group;
+  private String questionFile;
+
+  public TemplateMapping(TemplateMappingBuilder builder) {
+
+    this.id = builder.id;
+    this.template = builder.template;
+    this.group = builder.group;
+    this.questionFile = builder.questionFile;
+  }
+
+  public String getId() {
+
+    return this.id;
+  }
+
+  public String getTemplate() {
+
+    return this.template;
+  }
+
+  public String getGroup() {
+
+    return this.group;
+  }
+
+  public String getQuestionFile() {
+
+    return this.questionFile;
+  }
+
+  @Override
+  public String toString() {
+
+    return "{TemplateMapping : { \"id\" : "
+        + id
+        + ", \"template\" : "
+        + template
+        + ", \"group\" : "
+        + group
+        + ", \"questionFile\" : "
+        + questionFile
+        + " }}";
+  }
+
+  public static class TemplateMappingBuilder {
+
+    private String id;
+    private String template;
+    private String group;
+    private String questionFile;
+
+    public TemplateMappingBuilder setId(String id) {
+
+      this.id = id;
+      return this;
+    }
+
+    public TemplateMappingBuilder setTemplate(String template) {
+
+      this.template = template;
+      return this;
+    }
+
+    public TemplateMappingBuilder setGroup(String group) {
+
+      this.group = group;
+      return this;
+    }
+
+    public TemplateMappingBuilder setQuestionFile(String questionFile) {
+
+      this.questionFile = questionFile;
+      return this;
+    }
+
+    public TemplateMapping build() {
+
+      return new TemplateMapping(this);
     }
   }
 }

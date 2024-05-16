@@ -1,3 +1,3 @@
-id,java-file,question-file,type,category
-CA,./templates/CollectorsReviewer.java,./templates/collectors-reviewer.properties,java-8-features,Collectors
-AA,./templates/QuickSort.java,./templates/quick-sort.properties,sorting-algorithm,Quick Sort
+id,template-group,type,category
+CA,1,java-8-features,Collectors
+AA,1,sorting-algorithm,Quick Sort
