@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
@@ -25,6 +26,7 @@ public class App {
   private static final String LOCAL_DATE_TIME_FORMAT = "yyyyMMddHHmm";
   private static final Scanner SCANNER = new Scanner(System.in);
   private static final String QUESTION_PLACEHOLDER = "REPLACE_WITH_QUESTIONS";
+  private static final String COMMENT_LINE_PREFIX = "    // ";
 
   public static void main(String[] args) {
 
@@ -131,6 +133,36 @@ public class App {
     return mapping;
   }
 
+  private static List<ReviewerProperty> readReviewerPropertyFile(BufferedReader br)
+      throws IOException {
+
+    List<ReviewerProperty> reviewerProperties = new ArrayList<>();
+    String line = "";
+    while ((line = br.readLine()) != null) {
+
+      ReviewerProperty prop = parseReviewerProperty(line);
+      reviewerProperties.add(prop);
+    }
+
+    return reviewerProperties;
+  }
+
+  private static ReviewerProperty parseReviewerProperty(String line) {
+
+    String[] split = line.split("=");
+    String[] keySplit = split[0].split("-");
+
+    ReviewerProperty mapping =
+        new ReviewerProperty.ReviewerPropertyBuilder()
+            .setKey(split[0])
+            .setValue(split[1])
+            .setMainGroup(keySplit[0])
+            .setSubId(keySplit[1])
+            .build();
+
+    return mapping;
+  }
+
   private static void generateQuestionnare(
       String chosenId, List<QuestionMapping> questionMappings) {
 
@@ -177,8 +209,17 @@ public class App {
 
       while ((javaLine = javaBr.readLine()) != null) {
         if (javaLine.toLowerCase().contains(QUESTION_PLACEHOLDER.toLowerCase())) {
-          // read question file
+
+          List<ReviewerProperty> reviewerProperties = readReviewerPropertyFile(questionBr);
+          List<ReviewerProperty> finalList = generateFinalListOfQuestions(reviewerProperties);
+          for (ReviewerProperty prop : finalList) {
+            bw.write(COMMENT_LINE_PREFIX);
+            bw.write(prop.getValue());
+            bw.newLine();
+            bw.newLine();
+          }
         } else {
+
           bw.write(javaLine);
           bw.newLine();
         }
@@ -187,6 +228,24 @@ public class App {
     } catch (IOException e) {
       System.err.println(e.getMessage());
     }
+  }
+
+  private static List<ReviewerProperty> generateFinalListOfQuestions(List<ReviewerProperty> props) {
+
+    List<ReviewerProperty> finalList = new ArrayList<>();
+
+    Map<String, List<ReviewerProperty>> byMainGroup =
+        props.stream().collect(Collectors.groupingBy(ReviewerProperty::getMainGroup));
+    Random random = new Random();
+
+    for (Map.Entry<String, List<ReviewerProperty>> e : byMainGroup.entrySet()) {
+
+      List<ReviewerProperty> reviewerProperties = e.getValue();
+      int listSize = reviewerProperties.size();
+      finalList.add(reviewerProperties.get(random.nextInt(listSize)));
+    }
+
+    return finalList;
   }
 
   private static void validateJavaAndQuestionFiles(String javaFilePath, String questionFilePath) {
@@ -231,41 +290,6 @@ public class App {
             .atZone(ZoneId.of("Asia/Manila"))
             .format(DateTimeFormatter.ofPattern("yyyyMMddHHmm").withZone(ZoneOffset.of("+16:00")));
     return directoryName;
-  }
-
-  private static void createJavaQuestionnaire() {
-
-    String filename = generateFilename();
-    File file = new File(filename);
-    try {
-
-      file.createNewFile();
-
-      if (file.exists()) {
-
-        try (FileWriter fr = new FileWriter(filename);
-            BufferedWriter bw = new BufferedWriter(fr)) {
-          bw.write("banana");
-          bw.newLine();
-          bw.close();
-        }
-      }
-    } catch (IOException e) {
-      System.err.println(e.getMessage());
-    }
-  }
-
-  private static String generateFilename() {
-
-    LocalDateTime localDateTime = LocalDateTime.now();
-    String dateStr =
-        localDateTime
-            .atZone(ZoneId.of("Asia/Manila"))
-            .format(
-                DateTimeFormatter.ofPattern(LOCAL_DATE_TIME_FORMAT)
-                    .withZone(ZoneOffset.of("-16:00")));
-
-    return FILENAME + dateStr + FILE_TYPE;
   }
 
   private static void clearScreen() {
@@ -374,6 +398,93 @@ class QuestionMapping {
     public QuestionMapping build() {
 
       return new QuestionMapping(this);
+    }
+  }
+}
+
+class ReviewerProperty {
+
+  private String key;
+  private String value;
+  private String mainGroup;
+  private String subId;
+
+  public ReviewerProperty(ReviewerPropertyBuilder builder) {
+
+    this.key = builder.key;
+    this.value = builder.value;
+    this.mainGroup = builder.mainGroup;
+    this.subId = builder.subId;
+  }
+
+  public String getKey() {
+
+    return this.key;
+  }
+
+  public String getValue() {
+
+    return this.value;
+  }
+
+  public String getMainGroup() {
+
+    return this.mainGroup;
+  }
+
+  public String getSubId() {
+
+    return this.subId;
+  }
+
+  @Override
+  public String toString() {
+
+    return "{\"ReviewerProperty\" : {\"key\" : "
+        + key
+        + ", \"value\" : "
+        + value
+        + ", \"mainGroup\" : "
+        + mainGroup
+        + ", \"subId\" : "
+        + subId
+        + "}}";
+  }
+
+  public static class ReviewerPropertyBuilder {
+
+    private String key;
+    private String value;
+    private String mainGroup;
+    private String subId;
+
+    public ReviewerPropertyBuilder setKey(String key) {
+
+      this.key = key;
+      return this;
+    }
+
+    public ReviewerPropertyBuilder setValue(String value) {
+
+      this.value = value;
+      return this;
+    }
+
+    public ReviewerPropertyBuilder setMainGroup(String mainGroup) {
+
+      this.mainGroup = mainGroup;
+      return this;
+    }
+
+    public ReviewerPropertyBuilder setSubId(String subId) {
+
+      this.subId = subId;
+      return this;
+    }
+
+    public ReviewerProperty build() {
+
+      return new ReviewerProperty(this);
     }
   }
 }
