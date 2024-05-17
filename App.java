@@ -33,7 +33,6 @@ public class App {
 
     clearScreen();
     List<QuestionMapping> questionMappings = readQuestionMappingFile();
-    System.out.println(questionMappings);
 
     List<String> availableIds =
         questionMappings.stream().map(QuestionMapping::getId).collect(Collectors.toList());

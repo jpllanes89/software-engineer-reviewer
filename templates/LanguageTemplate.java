@@ -7,72 +7,8 @@ public class LanguageTemplate {
   public static void main(String[] args) {
 
     List<Optional<Language>> languageList = generateLanguages();
-    System.out.println(languageList);
 
-    // 1-1=Create an Optional<Language> object for Spanish Language: id = 5, name = "Spanish",
-    // numberOfSpeakers = 548000000
-
-    // 1-2=Create an Optional<Language> object for French Language: id = 5, name = "French",
-    // numberOfSpeakers = 280000000
-
-    // 2-1=Using stream, print out the language with values from languageList
-    languageList.stream().forEach(n -> n.ifPresent(System.out::println));
-
-    // 3-1=Create a new list of languages and copy the values from the pre-generated languageList.
-    // replace the null language with Russian Language: id = 6, name = "Russian", numberOfSpeaker =
-    // 258200000. You can use Java 9's ifPresentOrElse
-
-    // 3-2=Create a new list of languages and copy the values from the pre-generated languageList.
-    // replace the null language with Russian Language: id = 6, name = "Portuguese", numberOfSpeaker
-    // =
-    // 257000000. You can use Java 8's orElse or Java 9's ifPresentOrElse
-    List<Optional<Language>> languageList2 = new ArrayList<>();
-    languageList.stream()
-        .forEach(
-            (n) -> {
-              n.ifPresentOrElse(
-                  (o) -> languageList2.add(n),
-                  () ->
-                      languageList2.add(
-                          Optional.of(
-                              new Language.LanguageBuilder()
-                                  .setId("5")
-                                  .setName("Russian")
-                                  .setNumberOfSpeakers(258200000)
-                                  .build())));
-            });
-    System.out.println(languageList2);
-
-    languageList.stream()
-        .forEach(
-            (n) -> {
-              Language newLang = n.orElse(new Language.LanguageBuilder().setId("6").build());
-              languageList2.add(Optional.of(newLang));
-            });
-
-    System.out.println(languageList2);
-    // 4-1=Iterate on the languageList and when encountering a null language, throw
-    // IllegalStateException
-    /*
-    languageList.stream()
-        .forEach(
-            (n) -> {
-              n.orElseThrow(IllegalStateException::new);
-            });
-            */
-    // 5-1=Iterate on the languageList and print out languages with more than 700,000,000 speakers.
-    // Message printed should be: <language-name> has more than 700,000,000 speakers
-    languageList.stream()
-        .forEach(
-            (n) -> {
-              n.filter(lang -> 700000000 < lang.getNumberOfSpeakers())
-                  .ifPresent(
-                      o -> System.out.println(o.getName() + " has more than 700,000,000 speakers"));
-            });
-
-    // 5-1=Iterate on the languageList and print out languages with less than 1,000,000,000 speakers.
-    // Message printed should be: <language-name> has more than 700,000,000 speakers
-
+    // REPLACE_WITH_QUESTIONS
   }
 
   private static List<Optional<Language>> generateLanguages() {
@@ -82,7 +18,6 @@ public class LanguageTemplate {
     Country america = new Country.CountryBuilder().setId("1").setName("America").build();
     Country china = new Country.CountryBuilder().setId("2").setName("China").build();
     Country india = new Country.CountryBuilder().setId("3").setName("India").build();
-    Country bangladesh = new Country.CountryBuilder().setId("4").setName("Bangladesh").build();
 
     languageList.add(
         Optional.of(
@@ -114,7 +49,6 @@ public class LanguageTemplate {
                 .setId("4")
                 .setName("Bengali")
                 .setNumberOfSpeakers(272700000)
-                .setCountry(bangladesh)
                 .build()));
 
     languageList.add(Optional.ofNullable(null));

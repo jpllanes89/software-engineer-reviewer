@@ -1,3 +1,4 @@
 id,template,group,question-file
-1,./templates/BooksTemplate.java,1,./templates/books-reviewer.properties
-2,./templates/CollectorsReviewer.java,1,./templates/collectors-reviewer.properties
+1,./templates/BooksTemplate.java,1,./templates/collectors-reviewer.properties
+2,./templates/LanguageTemplate.java,2,./templates/optional-reviewer.properties
+3,./templates/CollectorsReviewer.java,1,./templates/collectors-reviewer.properties
