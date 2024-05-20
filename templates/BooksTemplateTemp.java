@@ -1,9 +1,19 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.function.IntSupplier;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.Collection;
+import java.util.Optional;
+import java.util.Random;
+
 
 public class BooksTemplateTemp {
 
@@ -12,19 +22,84 @@ public class BooksTemplateTemp {
     List<Book> books = generateBooks();
 
     // REPLACE_WITH_QUESTIONS
-    // [1-1] Create an appendTitle Function that will add "TITLE: " to a string. For each title of book, apply the Function and print the output: TITLE: <title>
-    Function<String, String> appendTitle = s -> "TITLE: " + s;
+    // [1-1] Create an appendTitle UnaryOperator that will add "TITLE: " to a string. For each title of book, apply the UnaryOperator and print the output: TITLE: <title>
+    UnaryOperator<String> appendTitle = s -> "TITLE: " + s;
     books.stream().forEach(b -> System.out.println(appendTitle.apply(b.getTitle())));
-    // [1-2] Create an appendCategory Function that will add "CATEGORY: " to a string. For each category of book, apply the Function and print the output: CATEGORY: <category>
-    Function<String, String> appendCategory = s -> "CATEGORY: " + s;
+
+    // [1-2] Create an appendCategory UnaryOperator that will add "CATEGORY: " to a string. For each category of book, apply the UnaryOperator and print the output: CATEGORY: <category>
+    UnaryOperator<String> appendCategory = s -> "CATEGORY: " + s;
     books.stream().forEach(b -> System.out.println(appendCategory.apply(b.getCategory())));
-    // [1-3] Create an appendAuthor Function that will add "AUTHOR: " to a string. For each authof of book, apply the Function and print the output: AUTHOR: <author>
-    Function<String, String> appendAuthor = s -> "AUTHOR: " + s;
-    books.stream().forEach(e -> {
-      e.getAuthors().stream().forEach(a -> System.out.println(appendAuthor.apply(a)));
-    });
+
+    // [1-3] Create an appendAuthor UnaryOperator that will add "AUTHOR: " to a string. For each author of book, apply the UnaryOperator and print the output: AUTHOR: <author>
+    UnaryOperator<String> appendAuthor = s -> "AUTHOR: " + s;
     books.stream().map(Book::getAuthors).collect(Collectors.toList()).stream().flatMap(Collection::stream).forEach(a -> System.out.println(appendAuthor.apply(a)));
+
+    // [2-1] Create a createHeaderByTitleAndGenre BinaryOperator that will take the title and genre as parameter and will return "<title>: <genre>"
+    BinaryOperator<String> createHeaderByTitleAndGenre = (t, g) -> t + ": " + g;
+    books.stream().forEach(b -> System.out.println(createHeaderByTitleAndGenre.apply(b.getTitle(), b.getGenre())));
+
+    // [2-2] Create a createHeaderByTitleAndCategory BinaryOperator that will take the title and category as parameter and will return "<title>: <category>" 
+    BinaryOperator<String> createHeaderByTitleAndCategory = (t, c) -> t + ": " + c;
+    books.stream().forEach(b -> System.out.println(createHeaderByTitleAndCategory.apply(b.getTitle(), b.getCategory())));
+    
+    // [3-1] Create a toPhpPrice Function that will take price as parameter and will return a String "Php <price>"
+    Function<Double, String> toPhpPrice = p -> "Php " + String.valueOf(p);
+    books.stream().forEach(b -> System.out.println(toPhpPrice.apply(b.getPrice())));
+
+    // [3-2] Create a toNumberOfPages Function that will take numberOfpages parameter an will return a String "No. of Pages: <numberOfPages>"
+    Function<Integer, String> toNumberOfPages = n -> "No. of Pages: " + String.valueOf(n); 
+    books.stream().forEach(b -> System.out.println(toNumberOfPages.apply(b.getNumberOfPages())));
+
+    // [4-1] Create a createHeaderByTitleAndPages that will take title and numberOfPages as parameters and will return a String "<title>: <numberOfPages>"
+    BiFunction<String, Integer, String> createHeaderByTitleAndPages = (t, n) -> t + ": " + n; 
+    books.stream().forEach(b -> System.out.println(createHeaderByTitleAndPages.apply(b.getTitle(), b.getNumberOfPages())));
+
+    // [4-2] Create a createHeaderByTitleAndPrice that will take title an price as parameters and will return a String "<title>: <price>"
+    BiFunction<String, Double, String> createHeaderByTitleAndPrice = (t, p) -> t + ": " + p;
+    books.stream().forEach(b -> System.out.println(createHeaderByTitleAndPrice.apply(b.getTitle(), b.getPrice())));
+
+    // [5-1] Create two UnaryOperators. The first will be an encapsulateTitle which accepts a title parameter and returns "[<title>]". The Second will be an createFormattedTitle which accepts the result of the UnaryOperator then returns "TITLE: [<title>]"
+    UnaryOperator<String> encapsulateTitle = t -> "[" + t + "]";
+    UnaryOperator<String> createFormattedTitle = t -> "TITLE: " + t;
+    books.stream().forEach(b -> System.out.println(encapsulateTitle.andThen(createFormattedTitle).apply(b.getTitle())));
+
+    // [5-2] Create two UnaryOperators. The first will be an encapsulateTitle which accepts the result of the second UnaryOperator then returns "[TITLE: <title>]". The Second will be an createFormattedTitle which accepts a title parameter and returns "TITLE: <title>"
+    UnaryOperator<String> encapsulateTitle2 = t -> "[" + t + "]";
+    UnaryOperator<String> createFormattedTitle2 = t -> "TITLE: " + t;
+    books.stream().forEach(b -> System.out.println(encapsulateTitle2.compose(createFormattedTitle2).apply(b.getTitle())));
+
+    // [6-1] Create a printTitle Consumer which accepts a title parameter and prints "Title=<title>"
+    Consumer<String> printTitle = t -> System.out.println("Title=" + t);
+    books.stream().forEach(b -> printTitle.accept(b.getTitle()));
+    
+    // [6-2] Create a printCategory Consumer which accepts a category parameter and prints "Category=<category>"
+    Consumer<String> printCategory = c -> System.out.println("Category=" + c);
+    books.stream().forEach(b -> printCategory.accept(b.getCategory()));
+
+    // [6-3] Create a printAuthor Consumer which accepts a author parameter and prints "Author=<author>"
+    Consumer<String> printAuthor = a -> System.out.println("Author=" + a);
+    books.stream().map(Book::getAuthors).collect(Collectors.toList()).stream().flatMap(Collection::stream).collect(Collectors.toList()).forEach(a -> printAuthor.accept(a));
+
+    // [7-1] Create two Consumers. The first will be a printGenre which accepts a genre and prints "Genre=<genre>". The second will be a printFormattedGenre which accepts the result of the first genre and prints "[<genre>]" 
+    Consumer<String> printGenre = g -> System.out.println("Genre=" + g);
+    Consumer<String> printFormattedGenre = g -> System.out.println("[" + g + "]" );
+    books.stream().forEach(b -> printGenre.andThen(printFormattedGenre).accept(b.getGenre()));
+    
+    // [8-1] Create a generateGreetings which return a String "Hello, I am a Supplier" and print it.
+    Supplier<String> generateGreetings = () -> "Hello, I am a Supplier";
+    System.out.println(generateGreetings.get()); 
+
+    // [8-2] Create a generateRandomPageNumber which return an Integer <random-number> and print it.
+    Random random = new Random();
+    Supplier generateRandomPageNumber = () -> random.nextInt();
+    System.out.println(generateRandomPageNumber.get());
+
+    Predicate<Integer>
+    
+
   }
+
+
 
   private static List<Book> generateBooks() {
 
@@ -341,4 +416,53 @@ class Book {
       return new Book(this);
     }
   }
+}
+
+class Person{
+
+  private Optional<Banana> banana;
+
+  public void setBanana(Optional<Banana> banana){
+
+    this.banana = banana;
+  }
+
+  public Optional<Banana> getBanana(){
+
+    return this.banana;
+  }
+
+  @Override
+  public String toString(){
+
+    return "{Person : { \"banana\" : "+banana+"}}";
+  }
+
+}
+
+class Banana{
+
+  private String name;
+
+  public void setName(String name){
+
+    this.name = name;
+  }
+  
+  public String getName(){
+
+    return this.name;
+  }
+
+  @Override
+  public String toString(){
+
+    return "{Banana : {\"name\" : "+name+"}}";
+  }
+}
+
+@FunctionalInterface
+public interface BananaService<A, B>{
+
+  B peel(A r);
 }
