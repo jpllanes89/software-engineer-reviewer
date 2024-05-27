@@ -2,3 +2,4 @@ id,template-group,type,category
 CA,1,java-8-features,Collectors
 CB,2,java-8-features,Optional
 AA,1,sorting-algorithm,Quick Sort
+CC,3,java-8-features,Functional Interface

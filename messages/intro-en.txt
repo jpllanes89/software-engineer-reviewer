@@ -6,4 +6,5 @@ Please select a complexity, or a question, or a group of questions you want to a
 [AA] Quick Sort
 [CA] Collectors
 [CB] Optional
+[CC] Functional Interface
 [X] Exit
