@@ -2,3 +2,4 @@ id,template,group,question-file
 1,./templates/BooksTemplate.java,1,./templates/collectors-reviewer.properties
 2,./templates/LanguageTemplate.java,2,./templates/optional-reviewer.properties
 3,./templates/BooksTemplate.java,3,./templates/functional-interface-reviewer.properties
+4,./templates/SolutionTemplate.java,4,./templates/builder-design-pattern-reviewer.properties
