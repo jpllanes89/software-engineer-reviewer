@@ -9,6 +9,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.IntSupplier;
 import java.util.function.Predicate;
+import java.util.function.BiPredicate;
+import java.util.function.IntPredicate;
 import java.util.stream.Collectors;
 import java.util.Collection;
 import java.util.Optional;
@@ -89,14 +91,39 @@ public class BooksTemplateTemp {
     Supplier<String> generateGreetings = () -> "Hello, I am a Supplier";
     System.out.println(generateGreetings.get()); 
 
-    // [8-2] Create a generateRandomPageNumber which return an Integer <random-number> and print it.
+    // [8-2] Create a generateRandomPageNumber which returns an Integer <random-number> and print it.
     Random random = new Random();
     Supplier generateRandomPageNumber = () -> random.nextInt();
     System.out.println(generateRandomPageNumber.get());
 
-    Predicate<Integer>
-    
+    // [9-1] Create an isEvenNumber which accepts an Integer and returns true if the number is even.
+    IntPredicate isEvenNumber = n -> n % 2 == 0;
+    System.out.println(isEvenNumber.test(2));
 
+    // [9-2] Create an isOddNumber which accepts an Integer and returns true if the number id odd.
+    IntPredicate isOddNumber = n -> n % 2 != 0;
+    System.out.println(isOddNumber.test(3));
+
+    // [10-1] Create an doesBookContainEvenNumberOfPages which accepts a Book and returns true if the number of pages is even.
+    Predicate<Book> doesBookContainEvenNumberOfPages = b -> b.getNumberOfPages() % 2 == 0;
+    books.stream().forEach(b -> System.out.println(String.format("book has even number of pages: %s", doesBookContainEvenNumberOfPages.test(b))));
+
+    // [10-1] Create an doesBookContainOddNumberOfPages which accepts a Book and returns true if the number of pages is odd.
+    Predicate<Book> doesBookContainOddNumberOfPages = b -> b.getNumberOfPages() % 2 != 0;
+    books.stream().forEach(b -> System.out.println(String.format("book has odd number of pages: %s", doesBookContainOddNumberOfPages.test(b))));
+
+    // [11-1] Create a hasTheSameCategory which accepts two books and returns true if both books has same category
+    BiPredicate<Book, Book> hasTheSameCategory = (b1, b2) -> b1.getCategory().equalsIgnoreCase(b2.getCategory());
+    System.out.println(String.format("%s and %s has the same category: %s", books.get(0).getTitle(), books.get(2).getTitle(), hasTheSameCategory.test(books.get(0), books.get(2))));
+    
+    // [12-1] Create a Functional Interface Random10Generator which has a generateRandom10 method which accepts no parameter and return a random number from 1 - 10
+    Random rnd = new Random();
+    Random10Generator random10Generator = () -> rnd.nextInt(11);
+    System.out.println(random10Generator.generateRandom10());
+
+    // [12-2] Create a Functional Interface name Greeting which has a greet method which accepts a String parameter and return a String "Hello <parameter>"
+    Greeting greeting = (s) -> "Hello " + s;
+    System.out.println(greeting.greet("Banana"));
   }
 
 
@@ -145,7 +172,7 @@ public class BooksTemplateTemp {
         new Book.Builder(4)
             .setTitle("Never Split the Difference")
             .setAuthors(Arrays.asList(new String[] {"Chris Voss", "Tahl Raz"}))
-            .setNumberOfPages(288)
+            .setNumberOfPages(289)
             .setPrice(24.49)
             .setIsAvailable(true)
             .setCategory("Hardcover")
@@ -157,7 +184,7 @@ public class BooksTemplateTemp {
         new Book.Builder(5)
             .setTitle("Stop Overthinking")
             .setAuthors(Arrays.asList(new String[] {"Nick Trenton"}))
-            .setNumberOfPages(200)
+            .setNumberOfPages(205)
             .setPrice(10.99)
             .setCategory("Digital")
             .setIsAvailable(false)
@@ -169,7 +196,7 @@ public class BooksTemplateTemp {
         new Book.Builder(6)
             .setTitle("The Art Of Saying NO")
             .setAuthors(Arrays.asList(new String[] {"Damon Zahariades"}))
-            .setNumberOfPages(170)
+            .setNumberOfPages(175)
             .setPrice(9.99)
             .setIsAvailable(false)
             .setCategory("Hardcover")
@@ -462,7 +489,15 @@ class Banana{
 }
 
 @FunctionalInterface
-public interface BananaService<A, B>{
+public interface Random10Generator{
 
-  B peel(A r);
+  public Integer generateRandom10();
 }
+
+
+@FunctionalInterface
+public interface Greeting{
+
+  public String greet(String s);
+}
+
