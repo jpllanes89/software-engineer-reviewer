@@ -1,7 +1,7 @@
 public class SolutionTemplate {
 
-  public static void main(String[] args) {
+    public static void main(String[] args) {
 
-    // REPLACE_WITH_QUESTIONS
-  }
+        // REPLACE_WITH_QUESTIONS
+    }
 }
