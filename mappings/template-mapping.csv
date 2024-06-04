@@ -4,3 +4,4 @@ id,template,group,question-file
 3,./templates/BooksTemplate.java,3,./templates/functional-interface-reviewer.properties
 4,./templates/SolutionTemplate.java,4,./templates/builder-design-pattern-reviewer.properties
 5,./templates/BooksTemplate.java,5,./templates/quick-sort-reviewer.properties
+6,./templates/CarsTemplate.java,6,./templates/lambda-reviewer.properties

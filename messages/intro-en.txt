@@ -9,5 +9,6 @@ Please select a complexity, or a question, or a group of questions you want to a
 [CA] Collectors
 [CB] Optional
 [CC] Functional Interface
+[CD] Lambda
 [DA] Builder Design Pattern
 [X] Exit
