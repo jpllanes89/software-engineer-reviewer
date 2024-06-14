@@ -1,14 +1,47 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.Comparator;
+import java.util.Collection;
 
-public class CarsTemplate {
+public class CarsTemplateTemp {
 
     public static void main(String[] args) {
 
         List<Car> cars = generateCars();
 
         // REPLACE_WITH_QUESTIONS
+        // 1-1=Using stream and Collectors, create a List<String> of all models of cars
+        List<String> models = cars.stream().map(Car::getModel).collect(Collectors.toList());
+        // 1-2=Using stream and Collectors, create a List<Integer> of all ids of cars
+        List<Integer> ids = cars.stream().map(Car::getId).collect(Collectors.toList());
+        // 2-1=Using stream, filter, and Collectors, create a List<Integer> of all even horsepowers
+        List<Integer> evenHorsepowers = cars.stream().map(Car::getHorsepower).filter(h -> h % 2 == 0).collect(Collectors.toList());
+        // 2-2=Using stream, filter, and Collectors, create a List<Integer> of all odd horsepowers
+        List<Integer> oddHorsepowers = cars.stream().map(Car::getHorsepower).filter(h -> h % 2 != 0).collect(Collectors.toList());
+        // 3-1=Using stream, limit, distinct, and Collectors, create a List<String> of distinct brands of cars but limit the size of List into 3 
+        List<String> brandsLimit3 = cars.stream().map(Car::getBrand).distinct().limit(3).collect(Collectors.toList());
+        // 3-2=Using stream, limit, distinct, and Collectors, create a List<Double> of distinct prices of cars but limit the size of List into 4 
+        List<Double> pricesLimit4 = cars.stream().map(Car::getPrice).distinct().limit(4).collect(Collectors.toList());
+        // 4-1=Using stream, limit, distinct, sort, and Collectors, create a List<String> of distinct brands sorted alphabetically and limit the size into 5
+        List<String> uniqueSortedBrandsLimit5 = cars.stream().map(Car::getBrand).distinct().sorted().limit(5).collect(Collectors.toList());
+        // 4-2=Using stream, limit, distinct, sort, and Collectors, create a List<Integer> of distinct prices sorted from highest to lowest and limit the size into 3 
+        List<Double> uniqueReversedPricesLimit3 = cars.stream().map(Car::getPrice).distinct().sorted(Comparator.reverseOrder()).limit(3).collect(Collectors.toList());
+        // 5-1=Using stream and allMatch, verify if all the cars' horsepower are above 500
+        boolean areCarsAbove500hp = cars.stream().map(Car::getHorsepower).allMatch(h -> h > 500);
+        // 5-2=Using stream and allMatch, verify if all the cars' prices are above 2000000.00 
+        boolean areCarsAbove2000000price = cars.stream().map(Car::getPrice).allMatch(p -> p > 2000000);
+        // 6-1=Using stream and anyMatch, verify if there is a car with a brand of Czinger
+        boolean doesCzingerBrandExists = cars.stream().map(Car::getBrand).anyMatch(b -> b.equalsIgnoreCase("Czinger"));
+        // 6-2=Using stream and anyMatch, verify if there is a Pagani Zonda car from the list 
+        boolean doesPaganiZondaModelExists = cars.stream().map(Car::getModel).anyMatch(m -> m.equalsIgnoreCase("Pagani Zonda"));
+        // 7-1=Using stream and noneMatch, verify if there are no 815 horspower from the car list 
+        boolean does815hpNotExists = cars.stream().map(Car::getHorsepower).noneMatch(h -> h == 815);
+        // 7-2=Using stream and noneMatch, verify if there are no cars with V8 engine
+        boolean doesV8EngineNotExists = cars.stream().map(Car::getEngines).flatMap(Collection::stream).noneMatch(e -> e.equalsIgnoreCase("V8"));
+        System.out.println(doesV8EngineNotExists);
+
     }
 
     private static List<Car> generateCars() {
