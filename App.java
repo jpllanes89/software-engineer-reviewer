@@ -28,6 +28,7 @@ public class App {
     private static final Scanner SCANNER = new Scanner(System.in);
     private static final String QUESTION_PLACEHOLDER = "REPLACE_WITH_QUESTIONS";
     private static final String COMMENT_LINE_PREFIX = "        // ";
+    private static final String BANANA = "banana";
 
     public static void main(String[] args) {
 
