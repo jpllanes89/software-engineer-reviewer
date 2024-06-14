@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CarsTemplate {
@@ -8,6 +9,7 @@ public class CarsTemplate {
         List<Car> cars = generateCars();
 
         // REPLACE_WITH_QUESTIONS
+        cars.stream().forEach(System.out::println);
     }
 
     private static List<Car> generateCars() {
@@ -21,6 +23,7 @@ public class CarsTemplate {
                         .setBrand("McLaren Automotive")
                         .setPrice(1700000.00)
                         .setHorsepower(813)
+                        .setEngines(Arrays.asList("V8", "3994cc", "twin-turbo"))
                         .build();
 
         Car car2 =
@@ -30,6 +33,7 @@ public class CarsTemplate {
                         .setBrand("Czinger")
                         .setPrice(1700000.00)
                         .setHorsepower(1250)
+                        .setEngines(Arrays.asList("V8", "twin-turbo"))
                         .build();
 
         Car car3 =
@@ -39,6 +43,7 @@ public class CarsTemplate {
                         .setBrand("Ferrari S.p.A.")
                         .setPrice(1700000.00)
                         .setHorsepower(809)
+                        .setEngines(Arrays.asList("V12", "F140"))
                         .build();
 
         Car car4 =
@@ -48,6 +53,7 @@ public class CarsTemplate {
                         .setBrand("Gordon Murray Automotive")
                         .setPrice(1700000.00)
                         .setHorsepower(607)
+                        .setEngines(Arrays.asList("V12"))
                         .build();
 
         Car car5 =
@@ -57,6 +63,7 @@ public class CarsTemplate {
                         .setBrand("Koenigsegg")
                         .setPrice(1700000.00)
                         .setHorsepower(1700)
+                        .setEngines(Arrays.asList("V8", "twin-turbo"))
                         .build();
 
         Car car6 =
@@ -66,6 +73,7 @@ public class CarsTemplate {
                         .setBrand("Hennessey Performance Engineering")
                         .setPrice(1800000.00)
                         .setHorsepower(1817)
+                        .setEngines(Arrays.asList("V8", "twin-turbo"))
                         .build();
 
         Car car7 =
@@ -75,6 +83,7 @@ public class CarsTemplate {
                         .setBrand("Bentley Motors")
                         .setPrice(1900000.00)
                         .setHorsepower(650)
+                        .setEngines(Arrays.asList("W12", "twin-turbo"))
                         .build();
 
         Car car8 =
@@ -84,6 +93,7 @@ public class CarsTemplate {
                         .setBrand("Hispano Suiza")
                         .setPrice(1900000.00)
                         .setHorsepower(650)
+                        .setEngines(Arrays.asList("2 Electric Motors"))
                         .build();
 
         Car car9 =
@@ -93,6 +103,7 @@ public class CarsTemplate {
                         .setBrand("Bentley Motors")
                         .setPrice(2000000.00)
                         .setHorsepower(710)
+                        .setEngines(Arrays.asList("V12", "twin-turbo"))
                         .build();
 
         Car car10 =
@@ -102,6 +113,7 @@ public class CarsTemplate {
                         .setBrand("Rolls-Royce")
                         .setPrice(30000000.00)
                         .setHorsepower(602)
+                        .setEngines(Arrays.asList("V12"))
                         .build();
 
         Car car11 =
@@ -111,6 +123,7 @@ public class CarsTemplate {
                         .setBrand("Rolls-Royce")
                         .setPrice(28000000.00)
                         .setHorsepower(563)
+                        .setEngines(Arrays.asList("V12", "twin-turbo"))
                         .build();
 
         Car car12 =
@@ -120,6 +133,7 @@ public class CarsTemplate {
                         .setBrand("Bugatti Automobiles")
                         .setPrice(13400000.00)
                         .setHorsepower(1500)
+                        .setEngines(Arrays.asList("7993cc"))
                         .build();
 
         cars.add(car1);
@@ -146,6 +160,7 @@ class Car {
     private String brand;
     private Double price;
     private Integer horsepower;
+    private List<String> engines;
 
     public Car(CarBuilder builder) {
 
@@ -154,6 +169,7 @@ class Car {
         this.brand = builder.brand;
         this.price = builder.price;
         this.horsepower = builder.horsepower;
+        this.engines = builder.engines;
     }
 
     public Integer getId() {
@@ -181,6 +197,11 @@ class Car {
         return this.horsepower;
     }
 
+    public List<String> getEngines(){
+
+        return this.engines;
+    }
+
     @Override
     public String toString() {
 
@@ -194,6 +215,8 @@ class Car {
                 + price
                 + ", \"horsepower\" : "
                 + horsepower
+                + ", \"engine\" : "
+                + engines
                 + "}}";
     }
 
@@ -204,6 +227,7 @@ class Car {
         private String brand;
         private Double price;
         private Integer horsepower;
+        private List<String> engines;
 
         public CarBuilder setId(Integer id) {
 
@@ -232,6 +256,12 @@ class Car {
         public CarBuilder setHorsepower(Integer horsepower) {
 
             this.horsepower = horsepower;
+            return this;
+        }
+
+        public CarBuilder setEngines(List<String> engines){
+
+            this.engines = engines;
             return this;
         }
 
