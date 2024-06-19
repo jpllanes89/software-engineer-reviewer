@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.Comparator;
 import java.util.Collection;
 import java.util.Optional;
@@ -57,12 +58,20 @@ public class CarsTemplateTemp {
         List<Integer> modelNumberOfCharacters = cars.stream().map(Car::getModel).map(String::length).collect(Collectors.toList());
         // 11-2=Using stream and map, create a List<Integer> where the values will be the number of engies
         List<Integer> numberOfEngines = cars.stream().map(Car::getEngines).map(List::size).collect(Collectors.toList());
-        // 12-1=Using stream and reduce, return the same of all prices of all cars
+        // 12-1=Using stream and reduce, return the sum of all prices of all cars
         double sumOfPrices = cars.stream().map(Car::getPrice).reduce(0.0, (p1, p2) -> p1 + p2);
-        // 12-2=Using stream, distinct, and reduce, Create a string which has all the distinct car brands 
+        // 12-2=Using stream, distinct, and reduce, create a string which has all the distinct car brands 
         String formattedCarBrands = cars.stream().map(Car::getBrand).distinct().reduce("", (m1, m2) -> m1 + m2);
-        System.out.println(formattedCarBrands);
-
+        // 13-1=Using stream, reduce, and Double.max, print the highest price of cars
+        cars.stream().map(Car::getPrice).reduce(Double::max).ifPresent(System.out::println);;
+        // 13-2=Using stream, reduce, and Double.min, print the lowest horsepower of cars
+        cars.stream().map(Car::getHorsepower).reduce(Integer::min).ifPresent(System.out::println);
+        // 14-1=Using stream and sum, compute the sum of all horsepowers of cars
+        System.out.println(cars.stream().mapToInt(Car::getHorsepower).sum());
+        // 14-2=Using stream and min, print the minimum car price
+        cars.stream().mapToDouble(Car::getPrice).min().ifPresent(System.out::println);;
+        // 15-2=Using stream and range, print all the odd numbers from 1 to 10
+        IntStream.range(1,10).filter(n -> n % 2 != 0).forEach(System.out::println);
     }
 
     private static List<Car> generateCars() {
