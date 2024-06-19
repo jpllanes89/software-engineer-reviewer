@@ -11,4 +11,5 @@ Please select a complexity, or a question, or a group of questions you want to a
 [CC] Functional Interface
 [CD] Lambda
 [DA] Builder Design Pattern
+[DB] Strategy Design Pattern[TODO]
 [X] Exit

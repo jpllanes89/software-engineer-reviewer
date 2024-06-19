@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Comparator;
 import java.util.Collection;
+import java.util.Optional;
 
 public class CarsTemplateTemp {
 
@@ -40,7 +41,27 @@ public class CarsTemplateTemp {
         boolean does815hpNotExists = cars.stream().map(Car::getHorsepower).noneMatch(h -> h == 815);
         // 7-2=Using stream and noneMatch, verify if there are no cars with V8 engine
         boolean doesV8EngineNotExists = cars.stream().map(Car::getEngines).flatMap(Collection::stream).noneMatch(e -> e.equalsIgnoreCase("V8"));
-        System.out.println(doesV8EngineNotExists);
+        // 8-1=Using stream and skip, create a List<String> of models alphabetically but skip the first 3
+        List<String> modelsSortedSkip3 = cars.stream().map(Car::getModel).sorted().skip(3).collect(Collectors.toList());
+        // 8-2=Using stream and skip, create a List<Double> of prices from highest to lowest but skip the first 2 
+        List<Double> pricesReversedSkip2 = cars.stream().map(Car::getPrice).sorted(Comparator.reverseOrder()).collect(Collectors.toList());
+        // 9-1=Using stream, sort, and Comparator sort the list of Cars by horsepower from lowest to highest
+        List<Car> sortedCarsByHoresepower = cars.stream().sorted(Comparator.comparing(Car::getHorsepower)).collect(Collectors.toList());
+        // 9-2=Using stream, sort, and Comparator, sort the list of Cars by horspower from highest to lowest
+        List<Car> sortedCarsByHorspowerReversed = cars.stream().sorted(Comparator.comparing(Car::getHorsepower, Comparator.reverseOrder())).collect(Collectors.toList());
+        // 10-1=Using stream and findAny, return any Car with a Rolls-Royce brand
+        Optional<Car> rollsRoyceBrandedCar = cars.stream().filter(c -> "Rolls-Royce".equalsIgnoreCase(c.getBrand())).findAny();
+        // 10-2=Using stream and findAny, return any Car with a horsepower greater than 500 but less then 1000
+        Optional<Car> carWith500to100Hp = cars.stream().filter(c -> 500 <= c.getHorsepower() && 1000 >= c.getHorsepower()).findAny();
+        // 11-1=Using stream and map, create a List<Integer> where the values will be the number of characters of the car model
+        List<Integer> modelNumberOfCharacters = cars.stream().map(Car::getModel).map(String::length).collect(Collectors.toList());
+        // 11-2=Using stream and map, create a List<Integer> where the values will be the number of engies
+        List<Integer> numberOfEngines = cars.stream().map(Car::getEngines).map(List::size).collect(Collectors.toList());
+        // 12-1=Using stream and reduce, return the same of all prices of all cars
+        double sumOfPrices = cars.stream().map(Car::getPrice).reduce(0.0, (p1, p2) -> p1 + p2);
+        // 12-2=Using stream, distinct, and reduce, Create a string which has all the distinct car brands 
+        String formattedCarBrands = cars.stream().map(Car::getBrand).distinct().reduce("", (m1, m2) -> m1 + m2);
+        System.out.println(formattedCarBrands);
 
     }
 
@@ -55,8 +76,7 @@ public class CarsTemplateTemp {
                         .setBrand("McLaren Automotive")
                         .setPrice(1700000.00)
                         .setHorsepower(813)
-                        .setEngines(Arrays.asList("V8", "3994cc", "twin-turbo"))
-                        .build();
+                        .setEngines(Arrays.asList("V8", "3994cc", "twin-turbo")) .build();
 
         Car car2 =
                 new Car.CarBuilder()
