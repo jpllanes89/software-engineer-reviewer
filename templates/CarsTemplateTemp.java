@@ -3,6 +3,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import java.util.Comparator;
 import java.util.Collection;
 import java.util.Optional;
@@ -70,9 +71,23 @@ public class CarsTemplateTemp {
         System.out.println(cars.stream().mapToInt(Car::getHorsepower).sum());
         // 14-2=Using stream and min, print the minimum car price
         cars.stream().mapToDouble(Car::getPrice).min().ifPresent(System.out::println);;
-        // 15-2=Using stream and range, print all the odd numbers from 1 to 10
+        // 15-1=Using IntStream and range, print all the odd numbers from 1 to 10
         IntStream.range(1,10).filter(n -> n % 2 != 0).forEach(System.out::println);
-    }
+        // 15-2=Using IntStream and range, pring all the even numbers from 1 to 10
+        IntStream.range(1, 10).filter(n -> n %2 == 0).forEach(System.out::println);
+        // 16-1=Using Stream.of, create a Stream<Integer> where values are 1, 2, 3, 4
+        Stream<Integer> streamOfIntegert1to4 = Stream.of(1,2,3,4);
+        streamOfIntegert1to4.forEach(System.out::println);
+        // 16-2=Using Stream.of, create a Stream<Double> where values are 2.0, 4.0, 6.0, 8.0
+        Stream<Double> streamOfDouble2to8 = Stream.of(2.0, 4.0, 6.0, 8.0);
+        streamOfDouble2to8.forEach(System.out::println);
+        // 17-1=Using Stream.iterate, create a Stream<Integer> with multiples of 5
+        Stream<Integer> multiplesOf5 = Stream.iterate(5, n -> n + 5);
+        multiplesOf5.limit(5).forEach(System.out::println);
+        // 17-2=Using Stream.iterate, create a Stream<Double> with multiples of 2.5 
+        Stream<Double> multiplesOf2p5 = Stream.iterate(2.5, n -> n + 2.5);
+        multiplesOf2p5.limit(5).forEach(System.out::println);
+   }
 
     private static List<Car> generateCars() {
 
