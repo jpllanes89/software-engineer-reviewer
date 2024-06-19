@@ -10,6 +10,7 @@ Please select a complexity, or a question, or a group of questions you want to a
 [CB] Optional
 [CC] Functional Interface
 [CD] Lambda
+[CE] Stream
 [DA] Builder Design Pattern
 [DB] Strategy Design Pattern[TODO]
 [X] Exit

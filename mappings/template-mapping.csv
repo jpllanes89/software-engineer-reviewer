@@ -5,3 +5,4 @@ id,template,group,question-file
 4,./templates/SolutionTemplate.java,4,./templates/builder-design-pattern-reviewer.properties
 5,./templates/BooksTemplate.java,5,./templates/quick-sort-reviewer.properties
 6,./templates/CarsTemplate.java,6,./templates/lambda-reviewer.properties
+7,./templates/CarsTemplate.java,7,./templates/stream-reviewer.properties
