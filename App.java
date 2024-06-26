@@ -19,16 +19,12 @@ import java.util.stream.Collectors;
 
 public class App {
 
-    private static final String FILENAME = "Question";
-    private static final String FILE_TYPE = ".java";
     private static final String MESSAGE_PATH_INTRO = "./messages/intro-en.txt";
     private static final String QUESTIONS_MAPPING_PATH = "./mappings/questions-mapping.csv";
     private static final String TEMPLATE_MAPPING_PATH = "./mappings/template-mapping.csv";
-    private static final String LOCAL_DATE_TIME_FORMAT = "yyyyMMddHHmm";
     private static final Scanner SCANNER = new Scanner(System.in);
     private static final String QUESTION_PLACEHOLDER = "REPLACE_WITH_QUESTIONS";
     private static final String COMMENT_LINE_PREFIX = "        // ";
-    private static final String BANANA = "banana";
 
     public static void main(String[] args) {
 
